@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: localPGSecurity
+    image: postgres
+    environment:
+      POSTGRES_DB: "local_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1234"
+    ports:
+      - "5432:5432"
