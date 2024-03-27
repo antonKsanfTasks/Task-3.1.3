@@ -19,14 +19,12 @@ import java.util.Set;
 public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
+    public AdminController(UserService userService, RoleService roleService) {
 
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -44,7 +42,6 @@ public class AdminController {
 
     @PostMapping
     public String createUser(@ModelAttribute("user") User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
         return "redirect:/admin/users/";
     }
@@ -63,7 +60,6 @@ public class AdminController {
 
     @PostMapping("/edit")
     public String editUser(@ModelAttribute("user") User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Зашифруйте пароль перед обновлением
         userService.update(user);
         return "redirect:/admin/users/";
     }
