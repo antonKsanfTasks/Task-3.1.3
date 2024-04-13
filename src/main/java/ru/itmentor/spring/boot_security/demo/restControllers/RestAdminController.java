@@ -16,29 +16,27 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("api/admin/users")
+@RequestMapping("api/admin")
 public class RestAdminController {
     private final UserService userService;
-    private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
     @Autowired
-    public RestAdminController(UserService userService, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
+    public RestAdminController(UserService userService, BCryptPasswordEncoder passwordEncoder, RoleService roleService) {
 
         this.userService = userService;
-        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
     }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> listUsers() {
         List<User> users = userService.findAll();
-        Set<Role> roles = roleService.findAll();
 
         Map<String, Object> response = new HashMap<>();
 
         response.put("users", users);
-        response.put("roles", roles);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -46,8 +44,14 @@ public class RestAdminController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         user.setPassword(userService.encodePassword(user.getPassword()));
+        if (user.getRoles() == null) {
+            user.getRoles().add(roleService.findByName("ROLE_USER"));
+        }
         userService.save(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        User createdUser = userService.findById(user.getId());
+        return createdUser != null
+                ? new ResponseEntity<>(createdUser, HttpStatus.CREATED)
+                : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/{id}")
@@ -84,7 +88,10 @@ public class RestAdminController {
 
         userService.update(currentUser);
 
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        User createdUser = userService.findByUsername(userUpdates.getUsername());
+        return createdUser != null
+                ? new ResponseEntity<>(createdUser, HttpStatus.CREATED)
+                : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @DeleteMapping("/{id}")
@@ -96,6 +103,6 @@ public class RestAdminController {
         }
 
         userService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
