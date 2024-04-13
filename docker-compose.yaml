@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   postgres:
-    container_name: localPGSecurity
+    container_name: localPGSecurityRest
     image: postgres
     environment:
       POSTGRES_DB: "local_db"

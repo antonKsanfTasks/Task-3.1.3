@@ -1,4 +1,4 @@
-package ru.itmentor.spring.boot_security.demo.configs;
+package ru.itmentor.spring.boot_security.demo.configs.WebConfigs;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +17,9 @@ import java.util.Set;
 public class SuccessUserHandler implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
     // Spring Security использует объект Authentication, пользователя авторизованной сессии.
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
+                                        HttpServletResponse httpServletResponse,
+                                        Authentication authentication) throws IOException {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (roles.contains("ROLE_USER")) {
             httpServletResponse.sendRedirect("/user/userStart");
@@ -27,7 +29,9 @@ public class SuccessUserHandler implements AuthenticationSuccessHandler, Authent
     }
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException exception) throws IOException {
+    public void onAuthenticationFailure(HttpServletRequest httpServletRequest,
+                                        HttpServletResponse httpServletResponse,
+                                        AuthenticationException exception) throws IOException, ServletException {
         httpServletRequest.getSession().setAttribute("error", true);
         httpServletResponse.sendRedirect("/loginPage");
     }

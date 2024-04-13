@@ -42,7 +42,7 @@ public class DataInitializer {
                 roleService.save(userRole);
             }
             // Add admin
-            User admin = new User("Anton", "Ksanf", 28, "aksanf@mail.ru", encoder.encode("1252"));
+            User admin = new User("Anton", "Ksanf", 28, "aksanf@mail.ru", encoder.encode("0000"));
             admin.getRoles().add(adminRole);
             userService.save(admin);
 

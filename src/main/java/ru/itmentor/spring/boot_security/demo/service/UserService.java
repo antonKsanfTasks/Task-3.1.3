@@ -5,6 +5,7 @@ import ru.itmentor.spring.boot_security.demo.model.User;
 import java.util.List;
 
 public interface UserService {
+    String encodePassword(String rawPassword);
     User findById(Long id);
     User findByUsername(String username);
     List<User> findAll();

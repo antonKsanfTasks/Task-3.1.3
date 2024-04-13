@@ -1,39 +1,43 @@
-package ru.itmentor.spring.boot_security.demo.controller;
+package ru.itmentor.spring.boot_security.demo.restControllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.itmentor.spring.boot_security.demo.model.User;
 import ru.itmentor.spring.boot_security.demo.service.UserService;
 
-@Controller
-@RequestMapping("/user")
-public class UserController {
+import java.util.HashMap;
+import java.util.Map;
 
+@RestController
+@RequestMapping("/api/user")
+public class RestUserController {
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public RestUserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/info")
-    public String getCurrentUserInfo(Model model) {
+    public ResponseEntity<Map<String, Object>> getCurrentUserInfo() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
+        Map<String, Object> response = new HashMap<>();
+
         if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
+            username = ((UserDetails) principal).getUsername();
         } else {
             username = principal.toString();
         }
 
         User user = userService.findByUsername(username);
-        model.addAttribute("user", user);
-        return "user/currentUserInfo";
+        response.put("user", user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
